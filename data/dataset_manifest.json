@@ -1,0 +1,59 @@
+{
+  "benchmark_version": "1.0",
+  "random_seed": 811,
+  "diagram_type": "Information Engineering Crow's-Foot ER",
+  "total_cases": 280,
+  "valid_cases": 140,
+  "invalid_cases": 140,
+  "domains": 14,
+  "topology_families": 10,
+  "error_types": 7,
+  "cases_per_error_type": 20,
+  "split_strategy": "Domain-grouped split. A domain and all schemas derived from it occur in exactly one split.",
+  "splits": {
+    "train": {
+      "total": 198,
+      "valid": 100,
+      "invalid": 98,
+      "domains": [
+        "airline",
+        "ecommerce",
+        "education",
+        "healthcare",
+        "hotel",
+        "insurance",
+        "library",
+        "logistics",
+        "media",
+        "university"
+      ]
+    },
+    "dev": {
+      "total": 41,
+      "valid": 20,
+      "invalid": 21,
+      "domains": [
+        "inventory",
+        "manufacturing"
+      ]
+    },
+    "test": {
+      "total": 41,
+      "valid": 20,
+      "invalid": 21,
+      "domains": [
+        "banking",
+        "company"
+      ]
+    }
+  },
+  "error_distribution": {
+    "CARDINALITY_UNIQUENESS_CONFLICT": 20,
+    "COMPOSITE_FK_INCOMPLETE": 20,
+    "FK_TARGET_NOT_KEY": 20,
+    "FK_WRONG_ENTITY": 20,
+    "IDENTIFYING_RELATIONSHIP_KEY_ERROR": 20,
+    "MISSING_REQUIRED_RELATIONSHIP": 20,
+    "PARTICIPATION_OPTIONALITY_CONFLICT": 20
+  }
+}

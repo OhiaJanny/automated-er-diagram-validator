@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ER Validator Prediction",
+  "description": "Standardized prediction format shared by all three ER validation methods.",
+
+  "type": "object",
+  "additionalProperties": false,
+
+  "required": [
+    "case_id",
+    "method",
+    "predicted_valid",
+    "errors",
+    "runtime_ms"
+  ],
+
+  "properties": {
+    "case_id": {
+      "type": "string",
+      "minLength": 1
+    },
+
+    "method": {
+      "type": "string",
+      "enum": [
+        "rule_based",
+        "constraint_solver",
+        "llm_based"
+      ]
+    },
+
+    "predicted_valid": {
+      "type": "boolean"
+    },
+
+    "errors": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/prediction_error"
+      }
+    },
+
+    "runtime_ms": {
+      "type": "number",
+      "minimum": 0
+    }
+  },
+
+  "$defs": {
+    "prediction_error": {
+      "type": "object",
+      "additionalProperties": false,
+
+      "required": [
+        "error_type",
+        "message"
+      ],
+
+      "properties": {
+        "error_type": {
+          "type": "string",
+          "enum": [
+            "FK_TARGET_NOT_KEY",
+            "FK_WRONG_ENTITY",
+            "COMPOSITE_FK_INCOMPLETE",
+            "CARDINALITY_UNIQUENESS_CONFLICT",
+            "PARTICIPATION_OPTIONALITY_CONFLICT",
+            "IDENTIFYING_RELATIONSHIP_KEY_ERROR",
+            "MISSING_REQUIRED_RELATIONSHIP"
+          ]
+        },
+
+        "entity": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+
+        "attribute": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+
+        "relationship": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+
+        "message": {
+          "type": "string",
+          "minLength": 1
+        },
+
+        "details": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    }
+  },
+
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "predicted_valid"
+        ],
+        "properties": {
+          "predicted_valid": {
+            "const": true
+          }
+        }
+      },
+
+      "then": {
+        "properties": {
+          "errors": {
+            "maxItems": 0
+          }
+        }
+      }
+    },
+
+    {
+      "if": {
+        "required": [
+          "predicted_valid"
+        ],
+        "properties": {
+          "predicted_valid": {
+            "const": false
+          }
+        }
+      },
+
+      "then": {
+        "properties": {
+          "errors": {
+            "minItems": 1
+          }
+        }
+      }
+    }
+  ]
+}

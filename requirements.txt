@@ -1,0 +1,11 @@
+jsonschema
+pytest
+networkx
+z3-solver
+openai
+numpy
+pandas
+scikit-learn
+matplotlib
+PyYAML
+python-dotenv

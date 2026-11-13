@@ -1,0 +1,472 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ER Validation Case",
+  "description": "Canonical input format for ER diagram validation cases.",
+  "type": "object",
+  "additionalProperties": false,
+
+  "required": [
+    "case_id",
+    "domain",
+    "entities",
+    "relationships",
+    "requirements",
+    "metadata",
+    "ground_truth"
+  ],
+
+  "properties": {
+    "case_id": {
+      "type": "string",
+      "minLength": 1
+    },
+
+    "domain": {
+      "type": "string",
+      "minLength": 1
+    },
+
+    "description": {
+      "type": "string"
+    },
+
+    "entities": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/entity"
+      }
+    },
+
+    "relationships": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/relationship"
+      }
+    },
+
+    "requirements": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/requirement"
+      }
+    },
+
+    "metadata": {
+      "$ref": "#/$defs/metadata"
+    },
+
+    "ground_truth": {
+      "$ref": "#/$defs/ground_truth"
+    }
+  },
+
+  "$defs": {
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+
+      "required": [
+        "entity",
+        "attribute"
+      ],
+
+      "properties": {
+        "entity": {
+          "type": "string",
+          "minLength": 1
+        },
+
+        "attribute": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+
+    "attribute": {
+      "type": "object",
+      "additionalProperties": false,
+
+      "required": [
+        "name",
+        "type",
+        "primary_key",
+        "nullable"
+      ],
+
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+
+        "type": {
+          "type": "string",
+          "minLength": 1
+        },
+
+        "primary_key": {
+          "type": "boolean"
+        },
+
+        "foreign_key": {
+          "type": "boolean",
+          "default": false
+        },
+
+        "nullable": {
+          "type": "boolean"
+        },
+
+        "unique": {
+          "type": "boolean",
+          "default": false
+        },
+
+        "references": {
+          "$ref": "#/$defs/reference"
+        }
+      },
+
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "foreign_key"
+            ],
+            "properties": {
+              "foreign_key": {
+                "const": true
+              }
+            }
+          },
+
+          "then": {
+            "required": [
+              "references"
+            ]
+          }
+        }
+      ]
+    },
+
+    "entity": {
+      "type": "object",
+      "additionalProperties": false,
+
+      "required": [
+        "name",
+        "attributes"
+      ],
+
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+
+        "attributes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/attribute"
+          }
+        }
+      }
+    },
+
+    "relationship": {
+      "type": "object",
+      "additionalProperties": false,
+
+      "required": [
+        "name",
+        "parent",
+        "child",
+        "parent_cardinality",
+        "child_cardinality",
+        "identifying"
+      ],
+
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+
+        "parent": {
+          "type": "string",
+          "minLength": 1
+        },
+
+        "child": {
+          "type": "string",
+          "minLength": 1
+        },
+
+        "parent_cardinality": {
+          "$ref": "#/$defs/cardinality"
+        },
+
+        "child_cardinality": {
+          "$ref": "#/$defs/cardinality"
+        },
+
+        "identifying": {
+          "type": "boolean"
+        }
+      }
+    },
+
+    "cardinality": {
+      "type": "string",
+      "enum": [
+        "0..1",
+        "1",
+        "0..*",
+        "1..*"
+      ]
+    },
+
+    "requirement": {
+      "type": "object",
+      "additionalProperties": true,
+
+      "required": [
+        "requirement_id",
+        "text"
+      ],
+
+      "properties": {
+        "requirement_id": {
+          "type": "string",
+          "minLength": 1
+        },
+
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+
+        "type": {
+          "type": "string"
+        },
+
+        "source": {
+          "type": "string"
+        },
+
+        "target": {
+          "type": "string"
+        },
+
+        "source_min": {
+          "type": "integer",
+          "minimum": 0
+        },
+
+        "source_max": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "string",
+              "const": "*"
+            }
+          ]
+        },
+
+        "target_min": {
+          "type": "integer",
+          "minimum": 0
+        },
+
+        "target_max": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "string",
+              "const": "*"
+            }
+          ]
+        }
+      }
+    },
+
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true,
+
+      "required": [
+        "source",
+        "difficulty",
+        "version"
+      ],
+
+      "properties": {
+        "source": {
+          "type": "string",
+          "enum": [
+            "synthetic",
+            "manual",
+            "real_world",
+            "toy"
+          ]
+        },
+
+        "difficulty": {
+          "type": "string",
+          "enum": [
+            "easy",
+            "medium",
+            "hard"
+          ]
+        },
+
+        "version": {
+          "type": [
+            "integer",
+            "string"
+          ]
+        },
+
+        "error_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+
+        "generator_version": {
+          "type": "string"
+        },
+
+        "seed": {
+          "type": "integer"
+        }
+      }
+    },
+
+    "error": {
+      "type": "object",
+      "additionalProperties": false,
+
+      "required": [
+        "error_type"
+      ],
+
+      "properties": {
+        "error_type": {
+          "type": "string",
+          "enum": [
+            "FK_TARGET_NOT_KEY",
+            "FK_WRONG_ENTITY",
+            "COMPOSITE_FK_INCOMPLETE",
+            "CARDINALITY_UNIQUENESS_CONFLICT",
+            "PARTICIPATION_OPTIONALITY_CONFLICT",
+            "IDENTIFYING_RELATIONSHIP_KEY_ERROR",
+            "MISSING_REQUIRED_RELATIONSHIP"
+          ]
+        },
+
+        "entity": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+
+        "attribute": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+
+        "relationship": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+
+        "details": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
+
+    "ground_truth": {
+      "type": "object",
+      "additionalProperties": false,
+
+      "required": [
+        "valid",
+        "errors"
+      ],
+
+      "properties": {
+        "valid": {
+          "type": "boolean"
+        },
+
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/error"
+          }
+        }
+      },
+
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "valid"
+            ],
+            "properties": {
+              "valid": {
+                "const": true
+              }
+            }
+          },
+
+          "then": {
+            "properties": {
+              "errors": {
+                "maxItems": 0
+              }
+            }
+          }
+        },
+
+        {
+          "if": {
+            "required": [
+              "valid"
+            ],
+            "properties": {
+              "valid": {
+                "const": false
+              }
+            }
+          },
+
+          "then": {
+            "properties": {
+              "errors": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

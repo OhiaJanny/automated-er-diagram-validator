@@ -1,0 +1,38 @@
+project:
+  name: er-defense-validator
+  benchmark_version: "1.0"
+  random_seed: 811
+
+data:
+  train: data/train.jsonl
+  dev: data/dev.jsonl
+  test: data/test.jsonl
+  manifest: data/dataset_manifest.json
+  toy_valid: data/toy/valid_example.json
+  toy_invalid: data/toy/invalid_example.json
+
+methods:
+  rule_based:
+    output: outputs/rule_based/predictions.jsonl
+
+  constraint_solver:
+    output: outputs/constraint_solver/predictions.jsonl
+
+  llm_based:
+    output: outputs/llm_based/predictions.jsonl
+    prompt: src/methods/llm_based/prompt.txt
+
+results:
+  metrics: results/metrics.csv
+  per_error_metrics: results/per_error_metrics.csv
+  figures: results/figures
+
+evaluation:
+  error_labels:
+    - FK_TARGET_NOT_KEY
+    - FK_WRONG_ENTITY
+    - COMPOSITE_FK_INCOMPLETE
+    - CARDINALITY_UNIQUENESS_CONFLICT
+    - PARTICIPATION_OPTIONALITY_CONFLICT
+    - IDENTIFYING_RELATIONSHIP_KEY_ERROR
+    - MISSING_REQUIRED_RELATIONSHIP
